@@ -13,9 +13,28 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { SchematicNBT } from '@/lib/interfaces/SchematicNBT';
 
-interface TableEntry {
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+
+import { SchematicNBT } from '@/lib/interfaces/SchematicNBT';
+import { Input } from '../ui/input';
+import { EditorEntry } from './editor-entry';
+
+export interface TableEntry {
   name: string;
   mod: string;
   count: number;
@@ -29,9 +48,12 @@ export function EditorTable({
   nbt: SchematicNBT | null;
 }) {
   // Only using JSON data; checking NBT in case JSON not processed
-  if (!jsonData || !nbt) return null;
+  if (!jsonData) return null;
 
+  // Using this rather than a DataTable
+  // I couldn't get the DataTable to work properly
   const [tableData, setTableData] = React.useState<TableEntry[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
 
   // Format the table data, easier to display
   const formatTableData = () => {
@@ -54,14 +76,33 @@ export function EditorTable({
   }, [jsonData]);
 
   return (
-    <Table>
-      {tableData.map((entry, index) => (
-        <TableRow key={index}>
-          <TableCell>{entry.name}</TableCell>
-          <TableCell>{entry.mod}</TableCell>
-          <TableCell>{entry.count}</TableCell>
-        </TableRow>
-      ))}
-    </Table>
+    <div className="w-full sm:p-4">
+      <Input
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="border-0"
+      />
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Mod</TableHead>
+            <TableHead>Count</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tableData
+            .filter((entry) => {
+              return entry.name
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+            })
+            .map((entry, index) => (
+              <EditorEntry entry={entry} key={entry.name} />
+            ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

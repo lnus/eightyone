@@ -26,7 +26,14 @@ export const MainNav = () => {
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <SearchBar />
           <nav className="flex items-center">
-            <Button variant="outline" size="icon" className="border-0 mx-2">
+            <Button
+              onClick={() =>
+                (location.href = 'https://github.com/lnus/eightyone')
+              }
+              variant="outline"
+              size="icon"
+              className="border-0 mx-2"
+            >
               <GitHubLogoIcon className="h-6 w-6" />
             </Button>
             <ModeToggle />
