@@ -21,7 +21,7 @@ export function JsonImport({
   // TODO: Add a way to import just via text input ?
   // TODO: Limit max file size to like, 1MB or something
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setReady(false);
     const file = e.target.files?.[0];
     if (!file) return;
@@ -33,8 +33,10 @@ export function JsonImport({
 
       try {
         const json = JSON.parse(result);
-        setJsonData(json);
         setReady(true);
+        setJsonData(json);
+
+        await parseJsonData();
       } catch (err) {
         console.error(err);
       }
@@ -42,7 +44,7 @@ export function JsonImport({
     reader.readAsText(file);
   };
 
-  const parseJsonData = async (_e: React.MouseEvent<HTMLElement>) => {
+  const parseJsonData = async () => {
     if (!jsonData) return; // null check
 
     // For now, assume that the JSON is in good shape
@@ -72,10 +74,6 @@ export function JsonImport({
     }
   };
 
-  // Flow:
-  // 1. User uploads a file
-  // 2. Compute everything client-side, no need to send to server
-  // 3. Display the schematic in the editor
   return (
     <div className="grid w-full max-w-sm items-center gap-1.5">
       <Label htmlFor="schem">Upload schematic file</Label>
@@ -85,9 +83,6 @@ export function JsonImport({
         accept="application/json, text/plain"
         onChange={handleFileChange}
       />
-      <Button type="submit" disabled={!ready} onClick={parseJsonData}>
-        Import schematic
-      </Button>
     </div>
   );
 }

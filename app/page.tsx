@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { SchematicJSON } from '@/lib/interfaces/SchematicJSON';
 import { SchematicNBT } from '@/lib/interfaces/SchematicNBT';
 import React from 'react';
+import { EditorTable } from '@/components/editor/editor-table';
 
 export default function Home() {
   // TODO: Do this in a context provider or something
@@ -20,6 +21,7 @@ export default function Home() {
         setJsonData={setJsonData}
         setNbt={setNbt}
       />
+      <EditorTable jsonData={jsonData} nbt={nbt} />
     </main>
   );
 }
