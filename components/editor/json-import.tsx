@@ -9,11 +9,14 @@ import * as NBT from 'nbtify';
 import { useDataStore } from '@/store/zustand';
 
 export function JsonImport() {
-  const { jsonData, setJsonData, setNbt } = useDataStore();
+  const { setJsonData, setNbt } = useDataStore();
+
+  // Used to not recompute everything when the JSON data changes
+  // Only recompute the NBT data when the JSON import changes
+  const [localJson, setLocalJson] = React.useState<SchematicJSON | null>(null);
 
   // TODO: Add a way to import just via text input ?
-  // TODO: Limit max file size to like, 1MB or something
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -25,22 +28,25 @@ export function JsonImport() {
       try {
         const json = JSON.parse(result);
         setJsonData(json);
-
-        await parseJsonData();
+        setLocalJson(json);
       } catch (err) {
         console.error(err);
       }
     };
+
     reader.readAsText(file);
   };
 
+  // For now, assume that the JSON is in good shape
+  // TODO: Validate the JSON
+  // TODO: Support different versions
   const parseJsonData = async () => {
-    if (!jsonData) return; // null check
+    if (!localJson) {
+      console.log('No JSON data');
+      return;
+    }
 
-    // For now, assume that the JSON is in good shape
-    // TODO: Validate the JSON
-    // TODO: Support different versions
-    const bodyData = jsonData.body;
+    const bodyData = localJson.body;
 
     // Body is base64 encoded
     const body = atob(bodyData);
@@ -56,13 +62,18 @@ export function JsonImport() {
       const data = (await NBT.read(bytes)) as SchematicNBT;
       setNbt(data);
 
-      // TODO: Add alert or something
-      console.log('Parsed NBT data', data);
+      console.log('Parsed imported NBT data', data);
     } catch (err) {
-      // TODO: Add alert or something
       console.error(err);
     }
   };
+
+  React.useEffect(() => {
+    // Always recompute the NBT when the JSON data changes
+    if (localJson) {
+      parseJsonData();
+    }
+  }, [localJson]);
 
   return (
     <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -71,7 +82,9 @@ export function JsonImport() {
         id="schem"
         type="file"
         accept="application/json, text/plain"
-        onChange={handleFileChange}
+        onChange={async (e) => {
+          await handleFileChange(e);
+        }}
       />
     </div>
   );
