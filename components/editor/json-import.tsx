@@ -77,9 +77,10 @@ export function JsonImport() {
 
   return (
     <div className="grid w-full max-w-sm items-center gap-1.5">
-      <Label htmlFor="schem">Upload schematic file</Label>
+      {/* <Label htmlFor="schem">Upload schematic file</Label> */}
       <Input
         id="schem"
+        placeholder='Upload "schematic.json" file'
         type="file"
         accept="application/json, text/plain"
         onChange={async (e) => {
