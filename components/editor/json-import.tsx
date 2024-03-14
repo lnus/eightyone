@@ -1,28 +1,19 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { SchematicJSON } from '@/lib/interfaces/SchematicJSON';
 import { SchematicNBT } from '@/lib/interfaces/SchematicNBT';
 import * as NBT from 'nbtify';
+import { useDataStore } from '@/store/zustand';
 
-export function JsonImport({
-  jsonData,
-  setJsonData,
-  setNbt,
-}: {
-  jsonData: SchematicJSON | null;
-  setJsonData: React.Dispatch<React.SetStateAction<SchematicJSON | null>>;
-  setNbt: React.Dispatch<React.SetStateAction<SchematicNBT | null>>;
-}) {
-  const [ready, setReady] = React.useState(false);
+export function JsonImport() {
+  const { jsonData, setJsonData, setNbt } = useDataStore();
+
   // TODO: Add a way to import just via text input ?
   // TODO: Limit max file size to like, 1MB or something
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setReady(false);
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -33,7 +24,6 @@ export function JsonImport({
 
       try {
         const json = JSON.parse(result);
-        setReady(true);
         setJsonData(json);
 
         await parseJsonData();

@@ -42,6 +42,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { DataTableDropdown } from './data-table-dropdown';
+import { useDataStore } from '@/store/zustand';
 
 export type TableEntry = {
   name: string;
@@ -113,11 +114,7 @@ const formatTableData = (jsonData: SchematicJSON): TableEntry[] => {
   return data;
 };
 
-export function EditorDataTable({
-  jsonData,
-}: {
-  jsonData: SchematicJSON | null;
-}) {
+export function EditorDataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -125,6 +122,8 @@ export function EditorDataTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const { jsonData } = useDataStore();
 
   const data = React.useMemo(() => {
     if (!jsonData) return [];

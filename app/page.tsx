@@ -12,11 +12,12 @@ import { DataTableDemo } from '@/components/editor/demo-data-table';
 import { EditorDataTable } from '@/components/editor/editor-data-table';
 
 import * as NBT from 'nbtify';
+import { useDataStore } from '@/store/zustand';
 
 export default function Home() {
-  // TODO: Do this in a context provider or something
-  const [jsonData, setJsonData] = React.useState<SchematicJSON | null>(null);
-  const [nbt, setNbt] = React.useState<SchematicNBT | null>(null);
+  // Get the data from zustand DataState
+  // TODO: Might not even be needed here, tbf
+  const { jsonData, nbt, setJsonData, setNbt } = useDataStore();
 
   // TODO: Move this and structure better
   const updateItem = async (oldItem: string, newItem: string) => {
@@ -63,13 +64,8 @@ export default function Home() {
 
   return (
     <main>
-      <JsonImport
-        jsonData={jsonData}
-        setJsonData={setJsonData}
-        setNbt={setNbt}
-      />
-      {/* <EditorTable jsonData={jsonData} nbt={nbt} /> */}
-      <EditorDataTable jsonData={jsonData} />
+      <JsonImport />
+      <EditorDataTable />
     </main>
   );
 }
